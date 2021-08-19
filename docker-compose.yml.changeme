@@ -1,0 +1,63 @@
+version: "3"
+services:
+  arangodb:
+    hostname: arangodb
+    image: arangodb:latest
+    container_name: arangodb
+    environment:
+      ARANGO_ROOT_PASSWORD=changeme
+    ports:
+      - 127.0.0.1:8529:8529
+    volumes:
+      - ./data/arangodb_data:/var/lib/arangodb3
+      - ./data/arangodb_apps:/var/lib/arangodb3-apps
+
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_USER=changeme
+      - RABBITMQ_PASS=changeme
+    ports:
+      - "127.0.0.1:5672:5672"
+
+  redis:
+    hostname: redis
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  scraper:
+    hostname: scraper
+    build: ./scraper
+    container_name: scraper
+    environment:
+      - RABBITMQ_USER=changeme
+      - RABBITMQ_PASS=changeme
+      - CONCURRENCY=5
+      - LOGLEVEL=info
+      - DB_HOST=127.0.0.1
+      - DB_PORT=8529
+      - DB_NAME=alertwildfire
+      - DB_USER=user
+      - DB_PASS=changeme
+    depends_on:
+      - rabbitmq
+      - redis
+
+  tweetalerts:
+    hostname: tweetalerts
+    build: ./tweetalerts
+    container_name: tweetalerts
+    environment:
+      - CONSUMER_KEY=changeme
+      - CONSUMER_PASS=changeme
+      - ACCESS_KEY=changeme
+      - ACCESS_PASS=changeme
+      - DB_HOST=127.0.0.1
+      - DB_PORT=8529
+      - DB_NAME=alertwildfire
+      - DB_USER=user
+      - DB_PASS=changeme
