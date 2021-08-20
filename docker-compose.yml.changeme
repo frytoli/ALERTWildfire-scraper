@@ -5,7 +5,7 @@ services:
     image: arangodb:latest
     container_name: arangodb
     environment:
-      ARANGO_ROOT_PASSWORD=changeme
+      - ARANGO_ROOT_PASSWORD=changeme
     ports:
       - 127.0.0.1:8529:8529
     volumes:
@@ -43,6 +43,8 @@ services:
       - DB_NAME=alertwildfire
       - DB_USER=user
       - DB_PASS=changeme
+      - CLIENT_ID=changeme
+      - CLIENT_PASS=changeme
     depends_on:
       - rabbitmq
       - redis
