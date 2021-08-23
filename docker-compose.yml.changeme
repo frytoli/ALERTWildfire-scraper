@@ -17,8 +17,8 @@ services:
     image: rabbitmq:latest
     container_name: rabbitmq
     environment:
-      - RABBITMQ_USER=changeme
-      - RABBITMQ_PASS=changeme
+      - RABBITMQ_DEFAULT_USER=changeme
+      - RABBITMQ_DEFAULT_PASS=changeme
     ports:
       - "127.0.0.1:5672:5672"
 
@@ -34,8 +34,8 @@ services:
     build: ./scraper
     container_name: scraper
     environment:
-      - RABBITMQ_USER=changeme
-      - RABBITMQ_PASS=changeme
+      - RABBITMQ_DEFAULT_USER=changeme
+      - RABBITMQ_DEFAULT_PASS=changeme
       - CONCURRENCY=5
       - LOGLEVEL=info
       - DB_HOST=127.0.0.1
@@ -43,8 +43,11 @@ services:
       - DB_NAME=alertwildfire
       - DB_USER=user
       - DB_PASS=changeme
+      - TOKEN=changeme
+      - REFRESH_TOKEN=changeme
+      - TOKEN_URI=changeme
       - CLIENT_ID=changeme
-      - CLIENT_PASS=changeme
+      - CLIENT_SECRET=changeme
     depends_on:
       - rabbitmq
       - redis
