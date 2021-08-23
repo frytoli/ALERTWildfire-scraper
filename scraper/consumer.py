@@ -5,10 +5,11 @@ import os
 
 app = Celery(
     'consumer',
-    broker=f'''amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASS')}@rabbitmq:5672''',
+    broker=f'''amqp://{os.getenv('RABBITMQ_DEFAULT_USER')}:{os.getenv('RABBITMQ_DEFAULT_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
     backend='rpc://redis:6379'
 )
 
 @app.task
-def add(x, y):
-    return x + y
+def scrape(saveto_dir, id, url, proxies):
+    print('woot')
+    # Scrape and save image
