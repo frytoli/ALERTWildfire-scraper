@@ -3,7 +3,6 @@
 from requests.exceptions import ConnectionError, ProxyError
 from requests_html import HTMLSession
 from celery import Celery
-import logging
 import random
 import time
 import os
@@ -19,7 +18,7 @@ def scrape(saveto_dir, id, url, proxies):
     '''
         Scrape and save image from a camera url
     '''
-    logging.info(f'[-] Now scraping {url}')
+    print(f'[-] Now scraping {url}')
     # Sleep randomly
     time.sleep(random.randint(5,25))
     # Select proxy pair
@@ -32,7 +31,8 @@ def scrape(saveto_dir, id, url, proxies):
             url,
             proxies={
                 'http':f'http://{proxy}',
-                'https':f'https://{proxy}'}
+                'https':f'https://{proxy}'
+            }
         )
     except (ConnectionError, ProxyError):
         r = None
@@ -46,16 +46,17 @@ def scrape(saveto_dir, id, url, proxies):
                 url,
                 proxies={
                     'http':f'http://{proxy}',
-                    'https':f'https://{proxy}'}
+                    'https':f'https://{proxy}'
+                }
             )
         except (ConnectionError, ProxyError):
             r = None
     r.html.render()
-    logging.info(f'  [-] Page rendered')
+    print(f'  [-] Page rendered')
     # Find camera image source
     src = r.html.find('.leaflet-image-layer', first=True).attrs['src']
     img = f'http:{src}'
-    logging.info(f'  [-] Image found at {img}')
+    print(f'  [-] Image found at {img}')
     # Sleep for short, random time
     time.sleep(random.randint(3,13))
     # Download/save image
@@ -65,7 +66,7 @@ def scrape(saveto_dir, id, url, proxies):
     elif 'http' in url:
         root_domain = f'''http://{url.replace('http://','').split('/')[0]}/'''
     else:
-        logging.info('  [!] Incorrect protocol detected')
+        print('  [!] Incorrect protocol detected')
     headers = {'Referer': root_domain}
     try:
         r = session.get(
@@ -96,4 +97,4 @@ def scrape(saveto_dir, id, url, proxies):
             r = None
     with open(os.path.join(saveto_dir, f'{id}.jpg'), 'wb') as imgf:
         imgf.write(r.content)
-    logging.info(f'  [+] Image saved')
+    print(f'  [+] Image saved')
