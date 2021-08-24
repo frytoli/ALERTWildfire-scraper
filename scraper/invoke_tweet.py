@@ -12,6 +12,7 @@ if __name__ == '__main__':
         docs = adb.get_docs('tweets', secsdelta=600)
         if len(docs) > 0:
             # Start producer
-            producer.produce()
+            ids = [doc['id'] for doc in docs]
+            producer.produce('tweet', tweet_ids=ids)
         # Chill
         time.sleep(600)

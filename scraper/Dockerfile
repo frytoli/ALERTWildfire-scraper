@@ -9,9 +9,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install dependencies
 RUN apt update && \
 		apt install -y \
-			build-essential \
-      supervisor \
-			software-properties-common && \
+			build-essential supervisor software-properties-common \
+			gconf-service libasound2 libatk1.0-0 libc6 libcairo2 \
+			libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 \
+			libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 \
+			libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 \
+			libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 \
+			libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 \
+			libxrender1 libxss1 libxtst6 ca-certificates \
+			fonts-liberation libnss3 lsb-release xdg-utils wget && \
 		apt dist-upgrade -y
 
 ENV VIRTUAL_ENV=/venv
@@ -79,7 +85,7 @@ websockets==9.1 \
 zipp==3.5.0 \
 zope.interface==5.4.0
 
-# Add supervisord app config file
+# Add supervisord app config files
 ADD conf/supervise-* /etc/supervisor/conf.d/
 
 # Add app files
