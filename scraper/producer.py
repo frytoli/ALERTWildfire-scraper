@@ -54,4 +54,9 @@ def produce(invoked, tweet_ids=None):
     # Delete local directory
     shutil.rmtree(dirname)
     # Log event
-    adb.insert_doc('log', file=filename, invoked=invoked, tweets=tweet_ids)
+    event = {
+        'file': filename,
+        'invoked': invoked,
+        'tweets': tweet_ids
+    }
+    adb.insert_doc('log', event)
