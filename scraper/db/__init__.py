@@ -24,7 +24,7 @@ class arangodb():
         '''
         bindVars = {'@collection': collection}
         if secsdelta:
-            starttime = (datetime.datetime.utcnow() - datetime.timedelta(seconds=secdelta)).isoformat
+            starttime = (datetime.datetime.utcnow() - datetime.timedelta(seconds=secsdelta)).isoformat
             aql = '''
                 FOR doc IN @@collection
                     FILTER doc.timestamp > @starttime
