@@ -29,7 +29,13 @@ class arangodb():
         aql = '''
             INSERT @doc INTO cameras
         '''
-        bindVars = {'doc': {'id':id, 'url':url, 'timestamp':datetime.datetime.utcnow().isoformat()}}
+        bindVars = {
+            'doc': {
+                'id':id,
+                'url':url,
+                'timestamp':datetime.datetime.utcnow().isoformat()
+            }
+        }
         self.db.AQLQuery(aql, bindVars=bindVars)
 
 def select_ua():
