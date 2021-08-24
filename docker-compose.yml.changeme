@@ -36,7 +36,7 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
-      - CONCURRENCY=5
+      - CONCURRENCY=10
       - LOGLEVEL=info
       - DB_HOST=127.0.0.1
       - DB_PORT=8529
@@ -48,7 +48,15 @@ services:
       - TOKEN_URI=changeme
       - CLIENT_ID=changeme
       - CLIENT_SECRET=changeme
+      - PROJECT_ID=changeme
+      - TOKEN=changeme
+      - REFRESH_TOKEN=changeme
+      - GDRIVE_PARENT_DIR=changeme
+      - TWITTER_KEY=changeme
+      - TWITTER_SECRET=changeme
+      - TWITTER_BEARER_TOKEN=changeme
     depends_on:
+      - arangodb
       - rabbitmq
       - redis
 
@@ -66,3 +74,6 @@ services:
       - DB_NAME=alertwildfire
       - DB_USER=user
       - DB_PASS=changeme
+      - TWITTER_KEY=changeme
+      - TWITTER_SECRET=changeme
+      - TWITTER_BEARER_TOKEN=changeme
