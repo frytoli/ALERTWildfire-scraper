@@ -88,8 +88,7 @@ def enumerate():
                 camera_url = f'{region_url}?camera={axis}'
                 # Save to database
                 docid = f'{region}.{axis}'
-                docurl = f'{region_url}/?camera={axis}'
-                adb.insert_camera(docid, docurl)
+                adb.insert_camera(docid, camera_url)
                 print(f'  [+] Camera {docid} saved')
         time.sleep(random.randint(4,20))
 
