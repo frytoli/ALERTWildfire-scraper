@@ -2,7 +2,6 @@
 
 from pyArango.connection import *
 import datetime
-import uuid
 import os
 
 class arangodb():
@@ -38,12 +37,14 @@ class arangodb():
             '''
         return list(self.db.AQLQuery(aql, bindVars=bindVars, rawResults=True))
 
-    def insert_doc(self, collection, **kwargs):
+    def insert_doc(self, collection, doc):
         '''
             Insert a document into a collection
         '''
-        bindVars = dic(kwargs)
-        bindVars['@collection': collection]
+        bindVars = {
+            '@collection': collection,
+            'doc': doc
+        }
         aql = '''
             INSERT @doc INTO @@collection
         '''
