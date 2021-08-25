@@ -51,7 +51,7 @@ def scrape(saveto_dir, id, url, proxies):
             )
         except (ConnectionError, ProxyError):
             r = None
-    r.html.render()
+    r.html.render(timeout=20)
     print(f'  [-] Page rendered')
     # Find camera image source
     src = r.html.find('.leaflet-image-layer', first=True).attrs['src']
@@ -98,3 +98,6 @@ def scrape(saveto_dir, id, url, proxies):
     with open(os.path.join(saveto_dir, f'{id}.jpg'), 'wb') as imgf:
         imgf.write(r.content)
     print(f'  [+] Image saved')
+    # Close browser
+    session.close()
+    r.close()
