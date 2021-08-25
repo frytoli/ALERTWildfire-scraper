@@ -38,10 +38,10 @@ services:
       - RABBITMQ_DEFAULT_PASS=changeme
       - CONCURRENCY=10
       - LOGLEVEL=info
-      - DB_HOST=127.0.0.1
-      - DB_PORT=8529
-      - DB_NAME=alertwildfire
-      - DB_USER=user
+      - DB_HOST=changeme
+      - DB_PORT=changeme
+      - DB_NAME=changeme
+      - DB_USER=changeme
       - DB_PASS=changeme
       - TOKEN=changeme
       - REFRESH_TOKEN=changeme
@@ -52,9 +52,6 @@ services:
       - TOKEN=changeme
       - REFRESH_TOKEN=changeme
       - GDRIVE_PARENT_DIR=changeme
-      - TWITTER_KEY=changeme
-      - TWITTER_SECRET=changeme
-      - TWITTER_BEARER_TOKEN=changeme
     depends_on:
       - arangodb
       - rabbitmq
@@ -65,15 +62,14 @@ services:
     build: ./tweetalerts
     container_name: tweetalerts
     environment:
-      - CONSUMER_KEY=changeme
-      - CONSUMER_PASS=changeme
-      - ACCESS_KEY=changeme
-      - ACCESS_PASS=changeme
-      - DB_HOST=127.0.0.1
-      - DB_PORT=8529
-      - DB_NAME=alertwildfire
-      - DB_USER=user
+      - DB_HOST=changeme
+      - DB_PORT=changeme
+      - DB_NAME=changeme
+      - DB_USER=changeme
       - DB_PASS=changeme
-      - TWITTER_KEY=changeme
-      - TWITTER_SECRET=changeme
-      - TWITTER_BEARER_TOKEN=changeme
+      - SEARCHTWEETS_ENDPOINT=changeme
+      - SEARCHTWEETS_BEARER_TOKEN=changeme
+      - SEARCHTWEETS_CONSUMER_KEY=changeme
+      - SEARCHTWEETS_CONSUMER_SECRET=changeme
+    depends_on:
+      - arangodb
