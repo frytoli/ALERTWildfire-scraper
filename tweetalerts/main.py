@@ -5,7 +5,6 @@ import time
 import db
 
 def main():
-    time.sleep(30)
     # Initialize db object
     adb = db.arangodb()
     # Query tweets every 10 minutes
