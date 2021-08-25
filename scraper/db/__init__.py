@@ -17,19 +17,19 @@ class arangodb():
             password=DB_PASS
         )[DB_NAME]
 
-    def get_docs(self, collection, secsdelta=None):
+    def get_docs(self, collection, tweetid=0):
         '''
             Fetch documents from database with optional time range filtering
         '''
         bindVars = {'@collection': collection}
-        if secsdelta:
+        if tweetid:
             starttime = (datetime.datetime.utcnow() - datetime.timedelta(seconds=secsdelta)).isoformat
             aql = '''
                 FOR doc IN @@collection
-                    FILTER doc.timestamp > @starttime
+                    FILTER doc.tweetid > @tweetid
                     RETURN doc
             '''
-            bindVars['starttime'] = starttime
+            bindVars['tweetid'] = tweetid
         else:
             aql = '''
                 FOR doc IN @@collection

@@ -7,13 +7,19 @@ import db
 if __name__ == '__main__':
     # Initialize db object
     adb = db.arangodb()
-    # Check for new tweets once an hour
+    # Set temp last tweet id
+    lasttweetid = 0
+    # Check for new tweets once every 15 minutes
     while True:
-        # Pull tweets from past 10 minutes
-        docs = adb.get_docs('tweets', secsdelta=600)
+        # Pull newest tweets by id
+        docs = adb.get_docs('tweets', tweetid=lasttweetid)
         if len(docs) > 0:
+            # Sort tweets by id (larger id is more recent)
+            docs = sorted(docs, key=lambda k: k['id'], reverse=True)
+            # Set new last tweet id
+            lasttweetid = docs[0]['id']
             # Start producer
             ids = [doc['id'] for doc in docs]
             producer.produce('tweet', tweet_ids=ids)
-        # Chill
-        time.sleep(600)
+        # Chill for 15 minutes
+        time.sleep(900)
