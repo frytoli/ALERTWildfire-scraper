@@ -24,8 +24,8 @@ class arangodb():
                     password=DB_PASS
                 )[DB_NAME]
             except (theExceptions.ConnectionError, exceptions.ConnectionError) as e:
-                print(f'[!] {e}\n  [-] Attempting to establish connection again')
-                time.sleep(3)
+                print(f'[!] Failed ot establish a connection: {e}\n  [-] Trying again in 5 seconds')
+                time.sleep(5)
 
     def insert_new_tweet(self, tweetid, text):
         '''
