@@ -35,13 +35,13 @@ beautifulsoup4==4.9.3 \
 billiard==3.6.4.0 \
 bs4==0.0.1 \
 cachetools==4.2.2 \
-celery==5.0.5 \
+celery==5.1.2 \
 certifi==2021.5.30 \
 charset-normalizer==2.0.4 \
 click==7.1.2 \
 click-didyoumean==0.0.3 \
 click-plugins==1.1.1 \
-click-repl==0.1.6 \
+click-repl==0.2.0 \
 cssselect==1.1.0 \
 DateTime==4.3 \
 fake-useragent==0.1.11 \
@@ -55,11 +55,11 @@ googleapis-common-protos==1.53.0 \
 httplib2==0.19.1 \
 idna==3.2 \
 importlib-metadata==4.6.4 \
-kombu==5.0.2 \
+kombu==5.1.0 \
 lxml==4.6.3 \
 oauthlib==3.1.1 \
 parse==1.19.0 \
-prompt-toolkit==3.0.18 \
+prompt-toolkit==3.0.20 \
 protobuf==3.17.3 \
 pyArango==1.3.5 \
 pyasn1==0.4.8 \
@@ -84,6 +84,9 @@ wcwidth==0.2.5 \
 websockets==9.1 \
 zipp==3.5.0 \
 zope.interface==5.4.0
+
+# Run pyppeteer download/install chromium script
+RUN pyppeteer-install
 
 # Add supervisord app config files
 ADD conf/supervise-* /etc/supervisor/conf.d/

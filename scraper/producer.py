@@ -1,31 +1,16 @@
 #!/usr/bin/env python
 
-from requests_html import HTMLSession
-from consumer import scrape
+from consumer import app
 from celery import group
 import datetime
 import random
 import shutil
 import drive
-import time
 import db
 import os
 
-def get_proxies():
-	# Initialize HTML session
-	session = HTMLSession()
-	# Request data from proxyscrape API
-	api_resp = session.get(
-		'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all'
-	).text
-	# Split response blob into proxy ip:port pairs
-	pairs = api_resp.split('\r\n')
-	# Remove empty values or mis-structured values
-	good_pairs = [x for x in pairs if (x != '' and x.count('.') == 3)]
-	# Close session
-	session.close()
-	# Return good proxy pairs
-	return good_pairs
+# Set size of chunks
+n = int(os.getenv('CHUNK_SIZE'))
 
 def produce(invoked, tweet_ids=None):
 	# Name of temporary local directory where images are saved to
@@ -44,14 +29,10 @@ def produce(invoked, tweet_ids=None):
 	docs = adb.get_docs('cameras')
 	random.shuffle(docs)
 	# Chunk the docs into n-long groups
-	n = 8
 	chunked_docs = [docs[i:i+n] for i in range(0, len(docs), n)]
-	# Fetch proxies
-	proxies = get_proxies()
 	# Push to queue and wait for all tasks to complete
-	jobs = group([scrape(dirname, chunk, proxies) for chunk in chunked_docs])
-	results = jobs.apply_async()
-	result = results.join()
+	jobs = group([app.send_task('scrape', (dirname, chunk), kwargs={'timeout':1800}) for chunk in chunked_docs]).apply_async() # .apply_async() raises an error in the drain_events_until method in celery.backends.asynchronous
+	results = jobs.join()
 	# After queue is done, zip, upload to google drive, and delete locally
 	shutil.make_archive(filename, 'zip', dirname)
 	# Upload zip to Google Drive
