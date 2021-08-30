@@ -36,8 +36,9 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
-      - CONCURRENCY=10
+      - CONCURRENCY=3
       - LOGLEVEL=info
+      - CHUNK_SIZE=10
       - DB_HOST=changeme
       - DB_PORT=changeme
       - DB_NAME=changeme
