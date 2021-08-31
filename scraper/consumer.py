@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from requests.exceptions import ConnectionError, ProxyError, TooManyRedirects
+from asyncio.exceptions import CancelledError, InvalidStateError
 from requests_html import HTMLSession, AsyncHTMLSession
-from pyppeteer.errors import TimeoutError
+from pyppeteer.errors import TimeoutError, BrowserError
 from lxml.etree import ParserError
 from celery import Celery
+import asyncio
 import random
 import time
 import os
@@ -58,6 +60,7 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 					(str) the provided proxy:port pair
 	'''
 	async def _afunction():
+		r = None
 		try:
 			# Add headers if applicable
 			if len(headers) > 0:
@@ -79,8 +82,9 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 				)
 			# Render JS (This can raise a pyppeteer TimeoutError)
 			if render and r:
-				await r.html.arender(timeout=20)
-		except (ConnectionError, ProxyError, TooManyRedirects, TimeoutError, ParserError):
+				await r.html.arender(timeout=20, sleep=random.randint(2,5))
+		except (ConnectionError, ProxyError, TooManyRedirects, TimeoutError, BrowserError, ParserError, CancelledError, InvalidStateError) as e:
+			#print(f'[!] Error: {e}')
 			r = None
 		return r, id, url, proxy
 	return _afunction
@@ -105,16 +109,26 @@ def scrape(saveto_dir, docs, timeout=3000):
 	if not (isinstance(timeout, int) or isinstance(timeout, int)):
 		print('[!] Provided value for timeout is not int or float. Defaulting to timeout of 3000 seconds.')
 		timeout = 3000
-	# Sleep randomly
-	time.sleep(random.randint(15,30))
 	# Fetch proxies
 	proxies = get_proxies()
 	# Initialize step vars
 	active = {doc['id']: {'url': doc['url'], 'proxy': None, 'step':1, 'tries':0} for doc in docs}
-	# Initialize Async HTML session
-	asession = AsyncHTMLSession() #(browser_args=['--proxy-server={proxy}'])
+	# Initialize temp Async HTML session
+	asession = None
 	# Loop until all good responses are found
 	while len(active) > 0 and elapsed < timeout:
+		# Sleep randomly
+		time.sleep(random.randint(13,30))
+		# Initialize Async HTML session (sometimes these break)
+		if not asession:
+			try:
+				# Set existing event loop
+				loop = asyncio.get_event_loop()
+			except RuntimeError:
+				# If no event loop exists, create/set a new one
+				loop = asyncio.new_event_loop()
+				asyncio.set_event_loop(loop)
+			asession = AsyncHTMLSession(loop=loop)
 		# Shuffle proxies
 		random.shuffle(proxies)
 		# Craft dynamic arguments for async session
@@ -149,6 +163,8 @@ def scrape(saveto_dir, docs, timeout=3000):
 					active[id]['url'] = img
 					active[id]['proxy'] = proxy
 					active[id]['step'] = 2
+					# Close request object
+					r.close()
 				# Step 2
 				elif step == 2:
 					# Save image to file
@@ -166,6 +182,9 @@ def scrape(saveto_dir, docs, timeout=3000):
 				if step == 1:
 					# Select a new proxy and update the record
 					active[id]['proxy'] = random.choice(proxies)
+					# Close request object
+					if r:
+						r.close()
 				# Step 2
 				elif step == 2:
 					# Select a new proxy and update the record
@@ -176,10 +195,11 @@ def scrape(saveto_dir, docs, timeout=3000):
 					if active[id]['tries'] >= 5:
 						active[id]['tries'] = 0
 						active[id]['step'] = 1
-			# Sleep randomly
-			time.sleep(random.randint(3,18))
+					# Close request object
+					if r:
+						r.close()
 			# Update elapsed time
 			elapsed = time.time()-start
 	print(f'[-] Elapsed time: {elapsed}')
 	# Close browser
-	asession.close()
+	asyncio.run(asession.close())

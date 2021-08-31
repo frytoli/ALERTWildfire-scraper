@@ -97,8 +97,6 @@ ADD producer.py /app/producer.py
 ADD consumer.py /app/consumer.py
 ADD db /app/db
 ADD drive /app/drive
-ADD invoke_hourly.py /app/invoke_hourly.py
-ADD invoke_tweet.py /app/invoke_tweet.py
 
 # Let 'er rip
 CMD /usr/bin/supervisord -n

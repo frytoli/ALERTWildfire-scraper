@@ -12,7 +12,7 @@ import os
 # Set size of chunks
 n = int(os.getenv('CHUNK_SIZE'))
 
-def produce(invoked, tweet_ids=None):
+def produce():
 	# Name of temporary local directory where images are saved to
 	filename = f'''{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}'''
 	dirname = os.path.join(os.getcwd(), filename)
@@ -39,10 +39,13 @@ def produce(invoked, tweet_ids=None):
 	gd.upload(f'{filename}.zip', mimetype='application/zip')
 	# Delete local directory
 	shutil.rmtree(dirname)
-	# Log event
-	event = {
-		'file': filename,
-		'invoked': invoked,
-		'tweets': tweet_ids
-	}
-	adb.insert_doc('log', event)
+
+def schedule():
+	# Scrape indefinitely
+	while True:
+		produce()
+		# Sleep for a minute, and start again
+		time.sleep(60)
+
+if __name__ == '__main__':
+	schedule()
