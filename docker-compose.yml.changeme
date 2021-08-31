@@ -44,9 +44,6 @@ services:
       - DB_NAME=changeme
       - DB_USER=changeme
       - DB_PASS=changeme
-      - TOKEN=changeme
-      - REFRESH_TOKEN=changeme
-      - TOKEN_URI=changeme
       - CLIENT_ID=changeme
       - CLIENT_SECRET=changeme
       - PROJECT_ID=changeme
