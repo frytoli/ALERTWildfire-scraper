@@ -41,6 +41,8 @@ Technologies:
 ## Scraper
 Distributed, asynchronous scraping service of images from ALERTWildfire cameras.
 
+![](media/diagram.png)
+
 <b>BUG!</b> 🐛 there is an existing bug in Celery the affects the producer. A [ticket](https://github.com/celery/celery/issues/6937) is open.
 
 Technologies:
