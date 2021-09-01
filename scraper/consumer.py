@@ -83,7 +83,7 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 			# Render JS (This can raise a pyppeteer TimeoutError)
 			if render and r:
 				await r.html.arender(timeout=20, sleep=random.randint(2,5))
-		except (ConnectionError, ProxyError, TooManyRedirects, TimeoutError, BrowserError, ParserError, CancelledError, InvalidStateError) as e:
+		except (AttributeError, ConnectionError, ProxyError, TooManyRedirects, TimeoutError, BrowserError, ParserError, CancelledError, InvalidStateError) as e:
 			#print(f'[!] Error: {e}')
 			r = None
 		return r, id, url, proxy
