@@ -31,6 +31,20 @@ Technologies:
 * Docker
 * RabbitMQ (latest)
 
+### rabbitmq.conf
+
+[RabbitMQ config](https://www.rabbitmq.com/configure.html) file located at ```rabbitmq/myrabbit.conf```. ```consumer_timeout``` is set to 1 hour in milliseconds, 10 minutes longer than the timeout time (in seconds) [explicitly set](https://github.com/frytoli/ALERTWildfire-scraper/blob/2fc1013ba4544721f5cc904ef772c633f7c82510/scraper/producer.py#L34) for each scraping task in the Scraper's producer.
+
+```
+## Consumer timeout
+## If a message delivered to a consumer has not been acknowledge before this timer
+## triggers the channel will be force closed by the broker. This ensure that
+## faultly consumers that never ack will not hold on to messages indefinitely.
+##
+## Set to 1 hour in milliseconds
+consumer_timeout = 3600000
+```
+
 ## Redis
 Celery backend in Scraper.
 
@@ -42,8 +56,6 @@ Technologies:
 Distributed, asynchronous scraping service of images from ALERTWildfire cameras.
 
 ![](media/diagram.png)
-
-<b>BUG!</b> 🐛 there is an existing bug in Celery the affects the producer. A [ticket](https://github.com/celery/celery/issues/6937) is open.
 
 Technologies:
 * Docker

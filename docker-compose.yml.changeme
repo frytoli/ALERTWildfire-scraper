@@ -21,6 +21,8 @@ services:
       - RABBITMQ_DEFAULT_PASS=changeme
     ports:
       - "127.0.0.1:5672:5672"
+    volumes:
+      - ./rabbitmq/myrabbit.conf:/etc/rabbitmq/rabbitmq.conf
 
   redis:
     hostname: redis
