@@ -5,17 +5,11 @@ from asyncio.exceptions import CancelledError, InvalidStateError
 from requests_html import HTMLSession, AsyncHTMLSession
 from pyppeteer.errors import TimeoutError, BrowserError
 from lxml.etree import ParserError
-from celery import Celery
+from .celery import app
 import asyncio
 import random
 import time
 import os
-
-app = Celery(
-	'consumer',
-	broker=f'''amqp://{os.getenv('RABBITMQ_DEFAULT_USER')}:{os.getenv('RABBITMQ_DEFAULT_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
-	backend='rpc://redis:6379'
-)
 
 def get_proxies():
 	'''

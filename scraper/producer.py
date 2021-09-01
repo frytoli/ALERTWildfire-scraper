@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from consumer import app
+from distributed.consumer import scrape
 from celery import group
 import datetime
 import random
@@ -31,7 +31,8 @@ def produce():
 	# Chunk the docs into n-long groups
 	chunked_docs = [docs[i:i+n] for i in range(0, len(docs), n)]
 	# Push to queue and wait for all tasks to complete
-	jobs = group([app.send_task('scrape', (dirname, chunk), kwargs={'timeout':1800}) for chunk in chunked_docs]).apply_async() # .apply_async() raises an error in the drain_events_until method in celery.backends.asynchronous
+	args = [scrape.s(dirname, chunk, timeout=1800) for chunk in chunked_docs] # Dynamically create signature object args for group object
+	jobs = group(*args).apply_async()
 	results = jobs.join()
 	# After queue is done, zip, upload to google drive, and delete locally
 	shutil.make_archive(filename, 'zip', dirname)

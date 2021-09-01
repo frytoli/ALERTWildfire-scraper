@@ -93,10 +93,10 @@ ADD conf/supervise-* /etc/supervisor/conf.d/
 
 # Add app files
 RUN mkdir /app
+ADD db app/db
+ADD distributed app/distributed
+ADD drive app/drive
 ADD producer.py /app/producer.py
-ADD consumer.py /app/consumer.py
-ADD db /app/db
-ADD drive /app/drive
 
 # Let 'er rip
 CMD /usr/bin/supervisord -n
