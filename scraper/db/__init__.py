@@ -24,7 +24,7 @@ class arangodb():
                     password=DB_PASS
                 )[DB_NAME]
             except (theExceptions.ConnectionError, exceptions.ConnectionError) as e:
-                print(f'[!] Failed ot establish a connection: {e}\n  [-] Trying again in 5 seconds')
+                print(f'[!] Failed to establish a connection: {e}\n  [-] Trying again in 5 seconds')
                 time.sleep(5)
 
     def get_docs(self, collection, tweetid=0):
