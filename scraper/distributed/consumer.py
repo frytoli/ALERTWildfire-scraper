@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-from requests.exceptions import ConnectionError, ProxyError, TooManyRedirects
-from asyncio.exceptions import CancelledError, InvalidStateError
+#from requests.exceptions import ConnectionError, ProxyError, TooManyRedirects, ReadTimeout
+#from asyncio.exceptions import CancelledError, InvalidStateError
+#from lxml.etree import ParserError
+#import pyppeteer
+
 from requests_html import HTMLSession, AsyncHTMLSession
-from pyppeteer.errors import TimeoutError, BrowserError
-from lxml.etree import ParserError
 from .celery import app
 import asyncio
 import random
@@ -22,7 +23,8 @@ def get_proxies():
 	session = HTMLSession()
 	# Request data from proxyscrape API
 	api_resp = session.get(
-		'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all'
+		'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all',
+		timeout=30
 	).text
 	# Split response blob into proxy ip:port pairs
 	pairs = api_resp.split('\r\n')
@@ -64,7 +66,8 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 						'http':f'http://{proxy}',
 						'https':f'https://{proxy}'
 					},
-					headers=headers
+					headers=headers,
+					timeout=30
 				)
 			else:
 				r = await asession.get(
@@ -73,11 +76,13 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 						'http':f'http://{proxy}',
 						'https':f'https://{proxy}'
 					},
+					timeout=30
 				)
 			# Render JS (This can raise a pyppeteer TimeoutError)
 			if render and r:
-				await r.html.arender(timeout=20, sleep=random.randint(2,5))
-		except (AttributeError, ConnectionError, ProxyError, TooManyRedirects, TimeoutError, BrowserError, ParserError, CancelledError, InvalidStateError) as e:
+				await r.html.arender(timeout=30, sleep=random.randint(2,5))
+		#except (AttributeError, ConnectionError, ProxyError, TooManyRedirects, ReadTimeout, pyppeteer.errors.TimeoutError, pyppeteer.errors.BrowserError, pyppeteer.errors.ConnectionError, ParserError, CancelledError, InvalidStateError) as e:
+		except Exception as e:
 			#print(f'[!] Error: {e}')
 			r = None
 		return r, id, url, proxy
