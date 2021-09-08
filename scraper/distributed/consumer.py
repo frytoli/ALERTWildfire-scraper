@@ -11,6 +11,7 @@ import asyncio
 import random
 import time
 import os
+import re
 
 def get_proxies():
 	'''
@@ -35,13 +36,13 @@ def get_proxies():
 	# Return good proxy pairs
 	return good_pairs
 
-def make_afunc(asession, id, url, proxy, headers={}, render=False):
+def make_afunc(asession, axis, url, proxy, headers={}, render=False):
 	'''
 		Dynamically build an asynchronous function at runtime for use by requests-html's AsyncHTMLSession's run() method
 
 		Args:
 			asession: (AsyncHTMLSession) the AsyncHTMLSession object
-			id: (str) the document's id
+			axis: (str) the document's axis
 			url: (str) the docuemnt's url to the camera
 			proxy: (str) a proxy:port pair
 			headers: (dict) (optional) dictionary of desired request headers
@@ -51,7 +52,7 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 			asynchronous function
 				Returns:
 					(requests-html response object)
-					(str) the document's id
+					(str) the document's axis
 					(str) the docuemnt's url to the camera
 					(str) the provided proxy:port pair
 	'''
@@ -85,7 +86,7 @@ def make_afunc(asession, id, url, proxy, headers={}, render=False):
 		except Exception as e:
 			#print(f'[!] Error: {e}')
 			r = None
-		return r, id, url, proxy
+		return r, axis, url, proxy
 	return _afunction
 
 @app.task(name='scrape')
@@ -95,7 +96,7 @@ def scrape(saveto_dir, docs, timeout=3000):
 
 		Args:
 			saveto_dir: (str) path to the directory where the images are to be saved
-			docs: (list(dic())) a list of json documents with keys "id" and "url"
+			docs: (list(dic())) a list of json documents with keys "axis" and "url"
 			timeout: (int) (optional) number of seconds until timeout; this defaults to 50 minutes, 10 minutes less than RabbitMQ's timeout
 
 		Returns:
@@ -111,7 +112,7 @@ def scrape(saveto_dir, docs, timeout=3000):
 	# Fetch proxies
 	proxies = get_proxies()
 	# Initialize step vars
-	active = {doc['id']: {'url': doc['url'], 'proxy': None, 'step':1, 'tries':0} for doc in docs}
+	active = {doc['axis']: {'url': doc['url'], 'proxy': None, 'step':1, 'tries':0} for doc in docs}
 	# Initialize temp Async HTML session
 	asession = None
 	# Loop until all good responses are found
@@ -132,46 +133,47 @@ def scrape(saveto_dir, docs, timeout=3000):
 		random.shuffle(proxies)
 		# Craft dynamic arguments for async session
 		aargs = []
-		for id in active:
-			camera = active[id]
+		for axis in active:
+			camera = active[axis]
 			if camera['step'] == 1: # Step 1
 				proxy = random.choice(proxies)
 				# Make async function for initial page request
-				aargs.append(make_afunc(asession, id, camera['url'], proxy, render=True))
+				aargs.append(make_afunc(asession, axis, camera['url'], proxy, render=True))
 			elif camera['step'] == 2: # Step 2
 				# Make async function for image page request
-				aargs.append(make_afunc(asession, id, camera['url'], camera['proxy'], headers={'Referer': 'http://www.alertwildfire.org/'}))
-		# Make async requests and pair with id
+				aargs.append(make_afunc(asession, axis, camera['url'], camera['proxy'], headers={'Referer': 'http://www.alertwildfire.org/'}))
+		# Make async requests and pair with axis
 		results = asession.run(*aargs)
 		# Iterate over results and complete tasks per step if previous request was successful
 		for result in results:
 			# Parse result
 			r = result[0]
-			id = result[1]
+			axis = result[1]
 			url = result[2]
 			proxy = result[3]
-			step = active[id]['step']
+			step = active[axis]['step']
 			if r and r.status_code in [200, 301, 302, 303, 307]:
 				print(f'[-] Good response from {url}')
 				# Step 1
 				if step == 1:
 					# Find direct image url
-					src = r.html.find('.leaflet-image-layer', first=True).attrs['src']
-					img = f'http:{src}'
+					div = r.html.find('.pinch-zoom-content', first=True)
+					img = div.find('img', first=True).attrs['src']
+					src = f'http:{img}'
 					# Update record
-					active[id]['url'] = img
-					active[id]['proxy'] = proxy
-					active[id]['step'] = 2
+					active[axis]['url'] = src
+					active[axis]['proxy'] = proxy
+					active[axis]['step'] = 2
 					# Close request object
 					r.close()
 				# Step 2
 				elif step == 2:
 					# Save image to file
-					with open(os.path.join(saveto_dir, f'{id}.jpg'), 'wb') as imgf:
+					with open(os.path.join(saveto_dir, f'{axis}.jpg'), 'wb') as imgf:
 						imgf.write(r.content)
-					print(f'  [+] {id}.jpg saved')
+					print(f'  [+] {axis}.jpg saved')
 					# Update record, aka remove it from the list of active tasks
-					del active[id]
+					del active[axis]
 					# Close request object
 					r.close()
 			# If not successful
@@ -180,20 +182,20 @@ def scrape(saveto_dir, docs, timeout=3000):
 				# Step 1
 				if step == 1:
 					# Select a new proxy and update the record
-					active[id]['proxy'] = random.choice(proxies)
+					active[axis]['proxy'] = random.choice(proxies)
 					# Close request object
 					if r:
 						r.close()
 				# Step 2
 				elif step == 2:
 					# Select a new proxy and update the record
-					active[id]['proxy'] = random.choice(proxies)
+					active[axis]['proxy'] = random.choice(proxies)
 					# Increment number of tries
-					active[id]['tries'] += 1
+					active[axis]['tries'] += 1
 					# If five tries have been made, demote the step back to step 1
-					if active[id]['tries'] >= 5:
-						active[id]['tries'] = 0
-						active[id]['step'] = 1
+					if active[axis]['tries'] >= 5:
+						active[axis]['tries'] = 0
+						active[axis]['step'] = 1
 					# Close request object
 					if r:
 						r.close()
