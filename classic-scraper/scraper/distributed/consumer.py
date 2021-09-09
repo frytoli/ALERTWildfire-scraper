@@ -84,13 +84,13 @@ def make_afunc(asession, axis, url, proxy, headers={}, render=False):
 				await r.html.arender(timeout=30, sleep=random.randint(2,5))
 		#except (AttributeError, ConnectionError, ProxyError, TooManyRedirects, ReadTimeout, pyppeteer.errors.TimeoutError, pyppeteer.errors.BrowserError, pyppeteer.errors.ConnectionError, ParserError, CancelledError, InvalidStateError) as e:
 		except Exception as e:
-			#print(f'[!] Error: {e}')
+			print(f'  [!] Error: {e}')
 			r = None
 		return r, axis, url, proxy
 	return _afunction
 
-@app.task(name='scrape')
-def scrape(saveto_dir, docs, timeout=3000):
+@app.task(name='scrape-classic')
+def scrape_classic(saveto_dir, docs, timeout=3000):
 	'''
 		Asynchronous scrape and save images from a group of camera urls
 

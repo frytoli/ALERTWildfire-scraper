@@ -77,7 +77,7 @@ six==1.15.0 \
 soupsieve==2.2.1 \
 tqdm==4.62.1 \
 uritemplate==3.0.1 \
-urllib3==1.26.6 \
+urllib3==1.25.11 \
 vine==5.0.0 \
 w3lib==1.22.0 \
 wcwidth==0.2.5 \

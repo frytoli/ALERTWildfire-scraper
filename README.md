@@ -12,11 +12,6 @@ A multi-pronged service created for the goal of collecting training data for USC
 1. Create a Twitter Developer account, start a new project, and set the CLIENT_ID and CLIENT_SECRET environment variables in ```docker-compose.yml``` accordingly. [Step-by-step guide to making your first request to the new Twitter API v2](https://developer.twitter.com/en/docs/tutorials/step-by-step-guide-to-making-your-first-request-to-the-twitter-api-v2)
 2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample)), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
 
-## Run
-```
-docker-compose build --parallel && docker-compose up -d
-```
-
 ## ArangoDB
 Local ArangoDB database instance that stores all camera URLS (as collected by ```scripts/enumerator.py```) and Tweets from the Tweet Alerts monitor
 

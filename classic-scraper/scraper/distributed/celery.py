@@ -4,9 +4,9 @@ from celery import Celery
 import os
 
 app = Celery(
-	'distributed',
+	'classic',
 	broker=f'''amqp://{os.getenv('RABBITMQ_DEFAULT_USER')}:{os.getenv('RABBITMQ_DEFAULT_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
-	backend='rpc://redis:6379',
+	backend='rpc://redisc:6379',
 	include=['distributed.consumer']
 )
 
