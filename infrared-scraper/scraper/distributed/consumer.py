@@ -63,8 +63,9 @@ def scrape_ir(proxies, saveto_dir, id, axis, url, epoch, timeout=600):
 		except Exception as e:
 			#print(f'  [!] Error {e}')
 			r = None
-		# If good response, save image
+		# If good response, load and save image
 		if r and r.status_code in [200, 301, 302, 303, 307]:
+			time.sleep(3)
 			with open(filename, 'wb') as imgf:
 				imgf.write(r.content)
 			# Flip toggle

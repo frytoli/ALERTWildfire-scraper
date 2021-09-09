@@ -1,0 +1,42 @@
+version: "3"
+services:
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:latest
+    container_name: rabbitmqc
+    environment:
+      - RABBITMQ_DEFAULT_USER=changeme
+      - RABBITMQ_DEFAULT_PASS=changeme
+
+  redis:
+    hostname: redis
+    image: redis:latest
+    container_name: redisir
+
+  scraper:
+    hostname: scraper
+    build: ./scraper
+    container_name: scraperir
+    environment:
+      - RABBITMQ_HOST=rabbitmqir
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_DEFAULT_USER=changeme
+      - RABBITMQ_DEFAULT_PASS=changeme
+      - CONCURRENCY=5
+      - LOGLEVEL=info
+      - DB_HOST=host.docker.internal
+      - DB_PORT=changeme
+      - DB_NAME=changeme
+      - DB_USER=changeme
+      - DB_PASS=changeme
+      - CLIENT_ID=changeme
+      - CLIENT_SECRET=changeme
+      - PROJECT_ID=changeme
+      - TOKEN=changeme
+      - REFRESH_TOKEN=changeme
+      - GDRIVE_PARENT_DIR=changeme
+    depends_on:
+      - rabbitmqc
+      - redisc
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
