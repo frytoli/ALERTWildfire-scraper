@@ -1,25 +1,31 @@
 # ALERTWildfire Scraper
-
 A multi-pronged service created for the goal of collecting training data for USC research project "Early Fire Detection" that includes:
-* an asynchronous scraper which collects images from http://www.AlertWildfire.org and uploads a zip compressed archive of the images to Google Drive after each full execution
-* a Tweet monitor that saves Tweets that mention @AlertWildfire's Twitter account (potentially in regards to a wildfire) to a database
 * an ArangoDB instance which stores the urls of ALERTWildfire's cameras (as collected by ```scripts/enumerator.py```) and Tweets of interest as collected by the Tweet monitor
+* a distributed and asynchronous scraper which collects classic cam images from http://www.AlertWildfire.org and uploads a zip compressed archive of the images to Google Drive after each full execution
+* a Tweet monitor that saves Tweets that mention @AlertWildfire's Twitter account (potentially in regards to a wildfire) to a database
+* an asynchronous scraper that retrieves infrared cam images from http://beta.alertwildfire.org/infrared-cameras/ and uploads the images to Google Drive
 
+### ALERTWildfire
 "ALERTWildfire is a network of over 900 specialized camera installations in California, Nevada, Idaho and Oregon used by first responders and volunteers to detect and monitor wildfires." - [Nevada Today](https://www.unr.edu/nevada-today/news/2021/alertwildfire-thermal-cameras)
 
-## Prerequisites
+### Contents
+1. [Prerequisites](#prereqs)
+2. [ArangoDB](#arangodb)
+3. [Classic Scraper and Tweet Monitor](#scraperc)
+4. [Infrared Scraper](#scraperir)
 
+## <a href="prereqs"></a>Prerequisites
 1. Create a Twitter Developer account, start a new project, and set the CLIENT_ID and CLIENT_SECRET environment variables in ```docker-compose.yml``` accordingly. [Step-by-step guide to making your first request to the new Twitter API v2](https://developer.twitter.com/en/docs/tutorials/step-by-step-guide-to-making-your-first-request-to-the-twitter-api-v2)
-2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample)), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
+2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample) and a modified version of this exists at ```scripts/gdrive-token-helper.py```), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
 
-## ArangoDB
+## <a href="arangodb"></a>ArangoDB
 Local ArangoDB database instance that stores all camera URLS (as collected by ```scripts/enumerator.py```) and Tweets from the Tweet Alerts monitor
 
 Technologies:
 * Docker
 * ArangoDB (latest)
 
-## Classic Scraper and Tweet Alerts
+## <a href="scraperc"></a>Classic Scraper and Tweet Alerts
 
 ### RabbitMQ
 Celery broker in Scraper.
@@ -29,7 +35,6 @@ Technologies:
 * RabbitMQ (latest)
 
 #### rabbitmq.conf
-
 [RabbitMQ config](https://www.rabbitmq.com/configure.html) file located at ```rabbitmq/myrabbit.conf```. ```consumer_timeout``` is set to 1 hour in milliseconds, 10 minutes longer than the timeout time (in seconds) [explicitly set](https://github.com/frytoli/ALERTWildfire-scraper/blob/2fc1013ba4544721f5cc904ef772c633f7c82510/scraper/producer.py#L34) for each scraping task in the Scraper's producer.
 
 ```
@@ -138,7 +143,7 @@ Technologies:
 
 <b>PROJECT_ID</b>: Twitter API project ID
 
-## Infrared Scraper and Tweet Alerts
+## <a href="scraperir"></a>Infrared Scraper
 
 ### RabbitMQ
 Celery broker in Scraper.
