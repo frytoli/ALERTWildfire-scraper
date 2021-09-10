@@ -13,8 +13,8 @@ import time
 import os
 import db
 
-@app.task(name='scrape-ir')
-def scrape_ir(proxies, saveto_dir, id, axis, url, epoch, timeout=600):
+@app.task(name='scrape-infrared')
+def scrape(proxies, saveto_dir, id, axis, url, epoch, timeout=600):
 	'''
 		Scrape and save image from a camera url
 
