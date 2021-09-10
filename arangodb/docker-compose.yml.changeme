@@ -7,7 +7,7 @@ services:
     environment:
       - ARANGO_ROOT_PASSWORD=changeme
     ports:
-      - 127.0.0.1:8529:8529
+      - changeme:8529:8529
     volumes:
       - ./data/arangodb_data:/var/lib/arangodb3
       - ./data/arangodb_apps:/var/lib/arangodb3-apps

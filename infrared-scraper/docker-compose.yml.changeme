@@ -3,7 +3,7 @@ services:
   rabbitmq:
     hostname: rabbitmq
     image: rabbitmq:latest
-    container_name: rabbitmqc
+    container_name: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
@@ -11,19 +11,19 @@ services:
   redis:
     hostname: redis
     image: redis:latest
-    container_name: redisir
+    container_name: redis
 
   scraper:
     hostname: scraper
     build: ./scraper
-    container_name: scraperir
+    container_name: scraper
     environment:
-      - RABBITMQ_HOST=rabbitmqir
+      - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
-      - REDIS_HOST=changeme
-      - REDIS_PORT=changeme
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - CONCURRENCY=5
       - LOGLEVEL=info
       - DB_HOST=changeme
@@ -38,5 +38,5 @@ services:
       - REFRESH_TOKEN=changeme
       - GDRIVE_PARENT_DIR=changeme
     depends_on:
-      - rabbitmqc
-      - redisc
+      - rabbitmq
+      - redis
