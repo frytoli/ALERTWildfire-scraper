@@ -19,11 +19,38 @@ A multi-pronged service created for the goal of collecting training data for USC
 2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample) and a modified version of this exists at ```scripts/gdrive-token-helper.py```), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
 
 ## ArangoDB
-Local ArangoDB database instance that stores all camera URLS (as collected by ```scripts/enumerator.py```) and Tweets from the Tweet Alerts monitor
+ArangoDB database instance that stores all classic camera URLS (as collected by ```scripts/enumerator.py```), infrared camera URLS, and Tweets from the Tweet Alerts monitor
 
 Technologies:
 * Docker
 * ArangoDB (latest)
+
+### Collections
+<b>cameras</b> example:
+```json
+{
+  "url": "http://www.alertwildfire.org/orangecoca/index.html?camera=Axis-DeerCanyon1",
+  "timestamp": "2021-08-24T20:51:37.433870",
+  "axis": "orangecoca.Axis-DeerCanyon1"
+}
+```
+<b>tweets</b> example:
+```json
+{
+  "id": "1430287078156234757",
+  "text": "RT @CphilpottCraig: Evening timelapse 5:25-6:25pm #CaldorFire Armstrong Lookout camera. @AlertWildfire viewing North from South side of fir…",
+  "scrape_timestamp": "2021-08-24T22:55:25.862109"
+}
+```
+<b>ir-cameras</b> example::
+```json
+{
+  "axis": "Danaher_606Z_Thermal",
+  "epoch": 1631050791,
+  "url": "https://weathernode.net/img/flir/Danaher_606Z_Thermal_1631050791.jpg",
+  "timestamp": "2021-09-09T18:54:53.195532"
+}
+```
 
 ## Classic Scraper and Tweet Alerts
 
