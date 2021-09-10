@@ -24,6 +24,8 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
+      - REDIS_HOST=changeme
+      - REDIS_PORT=changeme
       - CONCURRENCY=3
       - LOGLEVEL=info
       - CHUNK_SIZE=10

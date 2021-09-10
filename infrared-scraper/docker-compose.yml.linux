@@ -22,6 +22,8 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
+      - REDIS_HOST=changeme
+      - REDIS_PORT=changeme
       - CONCURRENCY=5
       - LOGLEVEL=info
       - DB_HOST=host.docker.internal

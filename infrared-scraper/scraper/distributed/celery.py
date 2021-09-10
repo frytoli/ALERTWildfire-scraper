@@ -6,7 +6,7 @@ import os
 app = Celery(
 	'infrared',
 	broker=f'''amqp://{os.getenv('RABBITMQ_DEFAULT_USER')}:{os.getenv('RABBITMQ_DEFAULT_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
-	backend='rpc://redisir:6379',
+	backend=f'''rpc://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}''',
 	include=['distributed.consumer']
 )
 
