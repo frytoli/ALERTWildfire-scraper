@@ -19,14 +19,16 @@ Technologies:
 * Docker
 * ArangoDB (latest)
 
-## RabbitMQ
+## Classic Scraper and Tweet Alerts
+
+### RabbitMQ
 Celery broker in Scraper.
 
 Technologies:
 * Docker
 * RabbitMQ (latest)
 
-### rabbitmq.conf
+#### rabbitmq.conf
 
 [RabbitMQ config](https://www.rabbitmq.com/configure.html) file located at ```rabbitmq/myrabbit.conf```. ```consumer_timeout``` is set to 1 hour in milliseconds, 10 minutes longer than the timeout time (in seconds) [explicitly set](https://github.com/frytoli/ALERTWildfire-scraper/blob/2fc1013ba4544721f5cc904ef772c633f7c82510/scraper/producer.py#L34) for each scraping task in the Scraper's producer.
 
@@ -40,15 +42,15 @@ Technologies:
 consumer_timeout = 3600000
 ```
 
-## Redis
+### Redis
 Celery backend in Scraper.
 
 Technologies:
 * Docker
 * Redis (latest)
 
-## Scraper
-Distributed, asynchronous scraping service of images from ALERTWildfire cameras.
+### Scraper
+Distributed, asynchronous scraping service of classic images from ALERTWildfire cameras.
 
 ![](media/diagram.png)
 
@@ -60,14 +62,21 @@ Technologies:
   * [requests_html](https://github.com/psf/requests-html) (0.10.0)
 * Redis (latest)
 * RabbitMQ (latest)
-* Twitter Developer API
 * Google Drive API
 * Free Proxyscrape API
 
-### Environment Variables
+#### Environment Variables
+<b>RABBITMQ_HOST</b>: RabbitMQ host
+
+<b>RABBITMQ_PORT</b>: RabbitMQ port
+
 <b>RABBITMQ_DEFAULT_USER</b>: RabbitMQ user
 
 <b>RABBITMQ_DEFAULT_PASS</b>: RabbitMQ password
+
+<b>REDIS_HOST</b>: Redis host
+
+<b>REDIS_PORT</b>: Redis port
 
 <b>CONCURRENCY</b>: integer number of concurrent celery tasks
 
@@ -97,11 +106,11 @@ Technologies:
 
 <b>GDRIVE_PARENT_DIR</b>: ID of Google Drive directory in which to save zip archives of the scraped images
 
-## Logs
+### Logs
 
 Stdout and stderr are sent to ```/var/log/celery.log``` and ```/var/log/producer.log```. This can be changed in ```scraper/conf/supervise-celery.conf``` and ```scraper/conf/supervise-producer.conf```.
 
-## Tweet Alerts
+### Tweet Alerts
 Monitoring service that looks for and saves Tweets at @AlertWildfire to a local database that, one can assume, indicate wildfire activity on one of the cameras
 
 Technologies:
@@ -111,7 +120,7 @@ Technologies:
   * [searchtweets-v2](https://github.com/twitterdev/search-tweets-python)
 * Twitter Developer API
 
-## Environment Variables
+#### Environment Variables
 
 <b>DB_HOST</b>: database host
 
@@ -128,3 +137,76 @@ Technologies:
 <b>CLIENT_SECRET</b>: Twitter API client secret
 
 <b>PROJECT_ID</b>: Twitter API project ID
+
+## Infrared Scraper and Tweet Alerts
+
+### RabbitMQ
+Celery broker in Scraper.
+
+Technologies:
+* Docker
+* RabbitMQ (latest)
+
+### Redis
+Celery backend in Scraper.
+
+Technologies:
+* Docker
+* Redis (latest)
+
+### Scraper
+Asynchronous scraping service of infrared images from ALERTWildfire cameras.
+
+Technologies:
+* Docker
+* ArangoDB (latest)
+* Python 3.9
+  * [Celery](https://github.com/celery/celery) (5.1.2)
+  * [requests_html](https://github.com/psf/requests-html) (0.10.0)
+* Redis (latest)
+* RabbitMQ (latest)
+* Google Drive API
+* Free Proxyscrape API
+
+#### Environment Variables
+<b>RABBITMQ_HOST</b>: RabbitMQ host
+
+<b>RABBITMQ_PORT</b>: RabbitMQ port
+
+<b>RABBITMQ_DEFAULT_USER</b>: RabbitMQ user
+
+<b>RABBITMQ_DEFAULT_PASS</b>: RabbitMQ password
+
+<b>REDIS_HOST</b>: Redis host
+
+<b>REDIS_PORT</b>: Redis port
+
+<b>CONCURRENCY</b>: integer number of concurrent celery tasks
+
+<b>LOGLEVEL</b>: logging level (i.e. info)
+
+<b>DB_HOST</b>: database host
+
+<b>DB_PORT</b>: (arangodb) database port
+
+<b>DB_NAME</b>: (arangodb) database name
+
+<b>DB_USER</b>: (arangodb) database user
+
+<b>DB_PASS</b>: (arangodb) database password
+
+<b>CLIENT_ID</b>: Twitter API client ID
+
+<b>CLIENT_SECRET</b>: Twitter API client secret
+
+<b>PROJECT_ID</b>: Google Drive API project ID
+
+<b>TOKEN</b>: Google Drive API token
+
+<b>REFRESH_TOKEN</b>: Google Drive API refresh token
+
+<b>GDRIVE_PARENT_DIR</b>: ID of Google Drive directory in which to save zip archives of the scraped images
+
+### Logs
+
+Stdout and stderr are sent to ```/var/log/celery.log``` and ```/var/log/producer.log```. This can be changed in ```scraper/conf/supervise-celery.conf``` and ```scraper/conf/supervise-producer.conf```.
