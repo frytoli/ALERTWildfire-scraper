@@ -179,8 +179,7 @@ def scrape(saveto_dir, docs, timeout=3000):
 				# Step 1
 				if step == 1:
 					# Find direct image url
-					div = r.html.find('.pinch-zoom-content', first=True)
-					img = div.find('img', first=True).attrs['src']
+					img = r.html.find('.leaflet-image-layer', first=True).attrs['src']
 					src = f'http:{img}'
 					# Update record
 					active[axis]['url'] = src
