@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distributed.consumer import scrape_classic
+from distributed.consumer import scrape
 from celery import group
 import datetime
 import random
@@ -33,7 +33,7 @@ def produce():
 	# Chunk the docs into n-long groups
 	chunked_docs = [docs[i:i+n] for i in range(0, len(docs), n)]
 	# Push to queue and wait for all tasks to complete
-	args = [scrape_classic.s(dirname, chunk, timeout=1800) for chunk in chunked_docs] # Dynamically create signature object args for group object
+	args = [scrape.s(dirname, chunk, timeout=1800) for chunk in chunked_docs] # Dynamically create signature object args for group object
 	jobs = group(*args).apply_async()
 	results = jobs.get()
 	print('[-] Now saving results\n')
