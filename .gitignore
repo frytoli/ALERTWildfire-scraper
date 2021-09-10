@@ -134,3 +134,4 @@ secrets.ini
 docker-compose.yml
 temp/
 data/
+**.DS_Store
