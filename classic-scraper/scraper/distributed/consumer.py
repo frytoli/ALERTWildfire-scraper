@@ -23,16 +23,32 @@ def get_proxies():
 	# Initialize HTML session
 	session = HTMLSession()
 	# Request data from proxyscrape API
-	api_resp = session.get(
-		'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all',
-		timeout=30
-	).text
-	# Split response blob into proxy ip:port pairs
-	pairs = api_resp.split('\r\n')
-	# Remove empty values or mis-structured values
-	good_pairs = [x for x in pairs if (x != '' and x.count('.') == 3)]
+	try:
+		api_resp = session.get(
+			'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all',
+			timeout=30
+		).text
+	except Exception as e:
+		# If there's an error, sleep and try again
+		time.sleep(random.randint(3,6))
+		try:
+			api_resp = session.get(
+				'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all',
+				timeout=30
+			).text
+		except Exception as e:
+			api_resp = None
 	# Close session
 	session.close()
+	# If a good response was retrieved, process the list
+	if api_resp:
+		# Split response blob into proxy ip:port pairs
+		pairs = api_resp.split('\r\n')
+		# Remove empty values or mis-structured values
+		good_pairs = [x for x in pairs if (x != '' and x.count('.') == 3)]
+	# Otherwise, return an empty list
+	else:
+		good_pairs = []
 	# Return good proxy pairs
 	return good_pairs
 
@@ -90,7 +106,7 @@ def make_afunc(asession, axis, url, proxy, headers={}, render=False):
 	return _afunction
 
 @app.task(name='scrape-classic')
-def scrape_classic(saveto_dir, docs, timeout=3000):
+def scrape(saveto_dir, docs, timeout=3000):
 	'''
 		Asynchronous scrape and save images from a group of camera urls
 
@@ -111,6 +127,12 @@ def scrape_classic(saveto_dir, docs, timeout=3000):
 		timeout = 3000
 	# Fetch proxies
 	proxies = get_proxies()
+	# If request to proxyscrape was bad, sleep and try again
+	if len(proxies) < 1:
+		# Sleep randomly
+		time.sleep(random.randint(13,30))
+		# Try again
+		proxies = get_proxies()
 	# Initialize step vars
 	active = {doc['axis']: {'url': doc['url'], 'proxy': None, 'step':1, 'tries':0} for doc in docs}
 	# Initialize temp Async HTML session
