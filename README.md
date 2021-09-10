@@ -9,23 +9,23 @@ A multi-pronged service created for the goal of collecting training data for USC
 "ALERTWildfire is a network of over 900 specialized camera installations in California, Nevada, Idaho and Oregon used by first responders and volunteers to detect and monitor wildfires." - [Nevada Today](https://www.unr.edu/nevada-today/news/2021/alertwildfire-thermal-cameras)
 
 ### Contents
-1. [Prerequisites](#prereqs)
+1. [Prerequisites](#prerequisites)
 2. [ArangoDB](#arangodb)
-3. [Classic Scraper and Tweet Monitor](#scraperc)
-4. [Infrared Scraper](#scraperir)
+3. [Classic Scraper and Tweet Monitor](#classic-scraper-and-tweet-alerts)
+4. [Infrared Scraper](#infrared-scraper)
 
-## <a href="prereqs"></a>Prerequisites
+## Prerequisites
 1. Create a Twitter Developer account, start a new project, and set the CLIENT_ID and CLIENT_SECRET environment variables in ```docker-compose.yml``` accordingly. [Step-by-step guide to making your first request to the new Twitter API v2](https://developer.twitter.com/en/docs/tutorials/step-by-step-guide-to-making-your-first-request-to-the-twitter-api-v2)
 2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample) and a modified version of this exists at ```scripts/gdrive-token-helper.py```), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
 
-## <a href="arangodb"></a>ArangoDB
+## ArangoDB
 Local ArangoDB database instance that stores all camera URLS (as collected by ```scripts/enumerator.py```) and Tweets from the Tweet Alerts monitor
 
 Technologies:
 * Docker
 * ArangoDB (latest)
 
-## <a href="scraperc"></a>Classic Scraper and Tweet Alerts
+## Classic Scraper and Tweet Alerts
 
 ### RabbitMQ
 Celery broker in Scraper.
@@ -143,7 +143,7 @@ Technologies:
 
 <b>PROJECT_ID</b>: Twitter API project ID
 
-## <a href="scraperir"></a>Infrared Scraper
+## Infrared Scraper
 
 ### RabbitMQ
 Celery broker in Scraper.
