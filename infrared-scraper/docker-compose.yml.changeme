@@ -7,21 +7,44 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=changeme
       - RABBITMQ_DEFAULT_PASS=changeme
+    ports:
+      - 127.0.0.1:5672:5672
 
   redis:
     hostname: redis
     image: redis:latest
     container_name: redis
+    ports:
+      - 127.0.0.1:6379:6379
+
+  producer:
+    hostname: producer
+    build: ./producer
+    container_name: producer
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=changeme
+      - RABBITMQ_PASS=changeme
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=changeme
+      - DB_PORT=changeme
+      - DB_NAME=changeme
+      - DB_USER=changeme
+      - DB_PASS=changeme
+    depends_on:
+      - rabbitmq
+      - redis
 
   scraper:
     hostname: scraper
     build: ./scraper
-    container_name: scraper
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
-      - RABBITMQ_DEFAULT_USER=changeme
-      - RABBITMQ_DEFAULT_PASS=changeme
+      - RABBITMQ_USER=changeme
+      - RABBITMQ_PASS=changeme
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - CONCURRENCY=5
@@ -40,3 +63,4 @@ services:
     depends_on:
       - rabbitmq
       - redis
+    scale: 2

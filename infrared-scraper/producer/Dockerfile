@@ -46,12 +46,6 @@ cssselect==1.1.0 \
 DateTime==4.3 \
 fake-useragent==0.1.11 \
 future==0.18.2 \
-google-api-core==2.0.0 \
-google-api-python-client==2.17.0 \
-google-auth==2.0.1 \
-google-auth-httplib2==0.1.0 \
-google-auth-oauthlib==0.4.5 \
-googleapis-common-protos==1.53.0 \
 httplib2==0.19.1 \
 idna==3.2 \
 importlib-metadata==4.6.4 \
@@ -84,9 +78,6 @@ wcwidth==0.2.5 \
 websockets==9.1 \
 zipp==3.5.0 \
 zope.interface==5.4.0
-
-# Run pyppeteer download/install chromium script
-RUN pyppeteer-install
 
 # Add supervisord app config files
 ADD conf/supervise-* /etc/supervisor/conf.d/

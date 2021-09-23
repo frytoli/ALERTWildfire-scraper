@@ -6,12 +6,18 @@
 #import pyppeteer
 
 from requests_html import HTMLSession
-from .celery import app
+from celery import Celery
 import random
 import drive
 import time
 import os
 import db
+
+app = Celery(
+	'infrared',
+	broker=f'''amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
+	backend=f'''rpc://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}'''
+)
 
 @app.task(name='scrape-infrared')
 def scrape(proxies, saveto_dir, id, axis, url, epoch, timeout=600):

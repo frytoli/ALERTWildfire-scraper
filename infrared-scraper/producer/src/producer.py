@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
-from distributed.consumer import scrape
 from requests_html import HTMLSession
+from celery import Celery
 import datetime
 import time
 import re
 import db
 import os
+
+app = Celery(
+	'infrared',
+	broker=f'''amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
+	backend=f'''rpc://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}'''
+)
 
 WAIT_SECS = 15
 
@@ -88,11 +94,11 @@ def produce():
 		for doc in docs:
 			# If the image exists (aka it's epoch time < current epoch time), push it to the queue
 			if doc['epoch'] < int(datetime.datetime.now().timestamp()):
-				scrape.delay(proxies, tempdir, doc['_id'], doc['axis'], doc['url'], doc['epoch'])
+				app.send_task('scrape-infrared', (proxies, tempdir, doc['_id'], doc['axis'], doc['url'], doc['epoch'],))
 			# Otherwise, wait 15 seconds and push it to the queue
 			else:
 				time.sleep(WAIT_SECS)
-				scrape.delay(proxies, tempdir, doc['_id'], doc['axis'], doc['url'], doc['epoch'])
+				app.send_task('scrape-infrared', (proxies, tempdir, doc['_id'], doc['axis'], doc['url'], doc['epoch'],))
 			# Update doc's epoch time by 15 seconds
 			doc['epoch'] = doc['epoch']+15
 			doc['url'] = epoch_ptrn.sub(str(doc['epoch']), doc['url'])
