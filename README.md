@@ -14,6 +14,8 @@ A multi-pronged service created for the goal of collecting training data for USC
 3. [Classic Scraper and Tweet Monitor](#classic-scraper-and-tweet-alerts)
 4. [Infrared Scraper](#infrared-scraper)
 
+![](media/diagram.png)
+
 ## Prerequisites
 1. Create a Twitter Developer account, start a new project, and set the CLIENT_ID and CLIENT_SECRET environment variables in ```docker-compose.yml``` accordingly. [Step-by-step guide to making your first request to the new Twitter API v2](https://developer.twitter.com/en/docs/tutorials/step-by-step-guide-to-making-your-first-request-to-the-twitter-api-v2)
 2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample) and a modified version of this exists at ```scripts/gdrive-token-helper.py```), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
@@ -83,8 +85,6 @@ Technologies:
 
 ### Scraper
 Distributed, asynchronous scraping service of classic images from ALERTWildfire cameras.
-
-![](media/diagram.png)
 
 Technologies:
 * Docker
