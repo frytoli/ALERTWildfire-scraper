@@ -136,11 +136,11 @@ services:
       - DB_HOST=host.docker.internal
       - DB_PORT=8529
       - DB_NAME=alertwildfire
-      - DB_USER=user
-      - DB_PASS=s9oKaogflQj4raUTXrzBN
-      - SEARCHTWEETS_ENDPOINT=https://api.twitter.com/2/tweets/search/recent
-      - SEARCHTWEETS_BEARER_TOKEN=AAAAAAAAAAAAAAAAAAAAAEUITAEAAAAA1RaQ3aFIfn%2BpawWzf3v0mEcn9TU%3D60l0VjyBamEw3BMIKFPiH2zuwlIIB3mNWhc96oiWjiIPzWUvW9
-      - SEARCHTWEETS_CONSUMER_KEY=R55oBKxk5APhrzAUXeRJ07xSv
-      - SEARCHTWEETS_CONSUMER_SECRET=9WVQ1IzutpAG6GRRtG6kZ0jkOLR0Mrmx3J2QCpki6MkPz9NRgm
+      - DB_USER=changeme
+      - DB_PASS=changeme
+      - SEARCHTWEETS_ENDPOINT=changeme
+      - SEARCHTWEETS_BEARER_TOKEN=changeme
+      - SEARCHTWEETS_CONSUMER_KEY=changeme
+      - SEARCHTWEETS_CONSUMER_SECRET=changeme
     depends_on:
       - arangodb
