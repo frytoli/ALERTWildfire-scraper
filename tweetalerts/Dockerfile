@@ -37,10 +37,9 @@ RUN pip install --no-dependencies \
 	zope.interface==5.4.0
 
 # Add app files
-RUN mkdir /app
-ADD db /app/db
-ADD main.py /app/main.py
+ADD db /home/db
+ADD main.py /home/main.py
 
 # Let 'er rip
-CMD ["/app/main.py"]
+CMD ["/home/main.py"]
 ENTRYPOINT ["python"]
