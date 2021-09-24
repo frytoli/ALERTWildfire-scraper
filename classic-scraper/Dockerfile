@@ -91,8 +91,12 @@ RUN pyppeteer-install
 # Add supervisord app config files
 ADD conf/supervise-* /etc/supervisor/conf.d/
 
-# Add app files
-ADD src/ home/
+# Add app directories and files
+RUN mkdir /home/imgs
+ADD src/ /home/
+
+# Set working dir
+WORKDIR /home
 
 # Let 'er rip
 CMD /usr/bin/supervisord -n
