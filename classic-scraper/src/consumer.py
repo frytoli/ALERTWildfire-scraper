@@ -111,7 +111,7 @@ def make_afunc(asession, axis, url, proxy, headers={}, render=False):
 		return r, axis, url, proxy
 	return _afunction
 
-@app.task(name='scrape')
+@app.task(name='scrape-classic')
 def scrape(folder_id, docs, timeout=3000):
 	'''
 		Asynchronous scrape and save images from a group of camera urls

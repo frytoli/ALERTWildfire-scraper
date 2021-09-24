@@ -44,6 +44,7 @@ services:
       - DB_USER=changeme
       - DB_PASS=changeme
       - CHUNK_SIZE=15
+      - QUEUE=changeme
     depends_on:
       - rabbitmq
       - redis
@@ -63,6 +64,7 @@ services:
       - REDIS_PORT=6379
       - CONCURRENCY=2
       - LOGLEVEL=info
+      - QUEUE=changeme
       - CLIENT_ID=changeme
       - CLIENT_SECRET=changeme
       - PROJECT_ID=changeme
@@ -90,6 +92,7 @@ services:
       - DB_NAME=changeme
       - DB_USER=changeme
       - DB_PASS=changeme
+      - QUEUE=changeme
     depends_on:
       - rabbitmq
       - redis
@@ -108,6 +111,7 @@ services:
       - REDIS_PORT=6379
       - CONCURRENCY=5
       - LOGLEVEL=info
+      - QUEUE=changeme
       - DB_HOST=arangodb
       - DB_PORT=8529
       - DB_NAME=changeme

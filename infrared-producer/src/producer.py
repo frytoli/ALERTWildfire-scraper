@@ -89,11 +89,11 @@ def produce():
 		for doc in docs:
 			# If the image exists (aka it's epoch time < current epoch time), push it to the queue
 			if doc['epoch'] < int(datetime.datetime.now().timestamp()):
-				app.send_task('scrape-infrared', (proxies, doc['_id'], doc['axis'], doc['url'], doc['epoch'],), queue='infrared')
+				app.send_task('scrape-infrared', (proxies, doc['_id'], doc['axis'], doc['url'], doc['epoch'],), queue=os.getenv('QUEUE'))
 			# Otherwise, wait 15 seconds and push it to the queue
 			else:
 				time.sleep(WAIT_SECS)
-				app.send_task('scrape-infrared', (proxies, doc['_id'], doc['axis'], doc['url'], doc['epoch'],), queue='infrared')
+				app.send_task('scrape-infrared', (proxies, doc['_id'], doc['axis'], doc['url'], doc['epoch'],), queue=os.getenv('QUEUE'))
 			# Update doc's epoch time by 15 seconds
 			doc['epoch'] = doc['epoch']+15
 			doc['url'] = epoch_ptrn.sub(str(doc['epoch']), doc['url'])

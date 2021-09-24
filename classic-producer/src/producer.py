@@ -20,7 +20,7 @@ def produce():
 	foldername = f'''{datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%S')}'''
 	print(f'[-] Scraping commencing at {datetime.datetime.utcnow().isoformat()}')
 	# Send makedir task to queue and wait for folder ID
-	folderid = app.send_task('gdrive-mkdir', args=(foldername,), queue='classic').get()
+	folderid = app.send_task('gdrive-mkdir', args=(foldername,), queue=os.getenv('QUEUE')).get()
 	if folderid:
 		# Initialize db object
 		adb = db.arangodb()
@@ -31,7 +31,7 @@ def produce():
 		chunked_docs = [docs[i:i+n] for i in range(0, len(docs), n)]
 		# Push scraping tasks to queue
 		for chunk in chunked_docs:
-			app.send_task('scrape', args=(folderid, chunk,), kwargs={'timeout':1800}, queue='classic')
+			app.send_task('scrape-classic', args=(folderid, chunk,), kwargs={'timeout':1800}, queue=os.getenv('QUEUE'))
 
 def schedule():
 	# Scrape indefinitely
