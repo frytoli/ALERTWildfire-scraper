@@ -70,7 +70,7 @@ class gdrive():
         # Return the new folder's ID
         return folder.get('id')
 
-    def upload(self, path_to_file, mimetype='text/plain'):
+    def upload(self, parent_id, path_to_file, mimetype='text/plain'):
         # Refresh tokens if necessary
         self._refresh_token()
         # Initialize service
@@ -78,7 +78,7 @@ class gdrive():
         # Define file metadata and file media
         filename = path_to_file.split('/')[-1]
         metadata = {
-            'parents': [self.PARENT_DIR],
+            'parents': [parent_id],
             'name': filename,
             'mimeType': mimetype
         }

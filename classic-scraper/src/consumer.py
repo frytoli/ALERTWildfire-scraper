@@ -202,7 +202,7 @@ def scrape(folder_id, docs, timeout=3000):
 					with open(filename, 'wb') as imgf:
 						imgf.write(r.content)
 					# Upload file to Google Drive
-					gd.upload(folder_id, f'{filename}.zip', mimetype='image/jpg')
+					gd.upload(folder_id, filename, mimetype='image/jpg')
 					print(f'  [+] {axis}.jpg uploaded to Drive')
 					# Remove local file
 					os.remove(filename)
