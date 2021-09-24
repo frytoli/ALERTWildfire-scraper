@@ -37,8 +37,8 @@ def schedule():
 	# Scrape indefinitely
 	while True:
 		produce()
-		# Sleep for an hour, and start again
-		time.sleep(3600)
+		# Sleep for six hours and start again
+		time.sleep(21600)
 
 if __name__ == '__main__':
 	schedule()
