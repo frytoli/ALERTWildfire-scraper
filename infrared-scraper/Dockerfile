@@ -91,12 +91,9 @@ RUN pyppeteer-install
 # Add supervisord app config files
 ADD conf/supervise-* /etc/supervisor/conf.d/
 
-# Add app files
-RUN mkdir /app
-ADD db app/db
-ADD distributed app/distributed
-ADD drive app/drive
-ADD producer.py /app/producer.py
+# Add app directories and files
+RUN mkdir home/imgs
+ADD src/ home/
 
 # Let 'er rip
 CMD /usr/bin/supervisord -n

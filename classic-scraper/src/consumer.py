@@ -6,12 +6,18 @@
 #import pyppeteer
 
 from requests_html import HTMLSession, AsyncHTMLSession
-from .celery import app
+from celery import Celery
 import asyncio
 import random
+import drive
 import time
 import os
 import re
+
+app = Celery(
+	broker=f'''amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
+	backend=f'''rpc://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}''',
+)
 
 def get_proxies():
 	'''
@@ -105,8 +111,8 @@ def make_afunc(asession, axis, url, proxy, headers={}, render=False):
 		return r, axis, url, proxy
 	return _afunction
 
-@app.task(name='scrape-classic')
-def scrape(saveto_dir, docs, timeout=3000):
+@app.task(name='scrape')
+def scrape(folder_id, docs, timeout=3000):
 	'''
 		Asynchronous scrape and save images from a group of camera urls
 
@@ -125,6 +131,8 @@ def scrape(saveto_dir, docs, timeout=3000):
 	if not (isinstance(timeout, int) or isinstance(timeout, int)):
 		print('[!] Provided value for timeout is not int or float. Defaulting to timeout of 3000 seconds.')
 		timeout = 3000
+	# Initialize drive object
+	gd = drive.gdrive()
 	# Fetch proxies
 	proxies = get_proxies()
 	# If request to proxyscrape was bad, sleep and try again
@@ -190,9 +198,14 @@ def scrape(saveto_dir, docs, timeout=3000):
 				# Step 2
 				elif step == 2:
 					# Save image to file
-					with open(os.path.join(saveto_dir, f'{axis}.jpg'), 'wb') as imgf:
+					filename = os.path.join('imgs', f'{axis}.jpg')
+					with open(filename, 'wb') as imgf:
 						imgf.write(r.content)
-					print(f'  [+] {axis}.jpg saved')
+					# Upload file to Google Drive
+					gd.upload(folder_id, f'{filename}.zip', mimetype='image/jpg')
+					print(f'  [+] {axis}.jpg uploaded to Drive')
+					# Remove local file
+					os.remove(filename)
 					# Update record, aka remove it from the list of active tasks
 					del active[axis]
 					# Close request object
@@ -225,3 +238,12 @@ def scrape(saveto_dir, docs, timeout=3000):
 	print(f'[-] Elapsed time: {elapsed}')
 	# Close browser
 	asyncio.run(asession.close())
+
+@app.task(name='gdrive-mkdir')
+def gdrive_mkdir(folder_name):
+	# Initialize drive object
+	gd = drive.gdrive()
+	# Create a folder in the set parent directory
+	id = gd.mkdir(folder_name)
+	# Return
+	return id

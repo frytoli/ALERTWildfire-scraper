@@ -14,13 +14,12 @@ import os
 import db
 
 app = Celery(
-	'infrared',
 	broker=f'''amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
 	backend=f'''rpc://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}'''
 )
 
 @app.task(name='scrape-infrared')
-def scrape(proxies, saveto_dir, id, axis, url, epoch, timeout=600):
+def scrape(proxies, id, axis, url, epoch, timeout=600):
 	'''
 		Scrape and save image from a camera url
 
@@ -46,7 +45,7 @@ def scrape(proxies, saveto_dir, id, axis, url, epoch, timeout=600):
 	# Initialize an downloaded image toggle
 	img_success = False
 	# Set file name
-	filename = os.path.join(saveto_dir, f'{axis}_{epoch}.jpg')
+	filename = os.path.join('imgs', f'{axis}_{epoch}.jpg')
 	# Loop until response is found
 	while not img_success and elapsed < timeout:
 		# Sleep randomly

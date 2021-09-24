@@ -9,7 +9,6 @@ import db
 import os
 
 app = Celery(
-	'infrared',
 	broker=f'''amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASS')}@{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}''',
 	backend=f'''rpc://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}'''
 )
@@ -56,10 +55,6 @@ def get_proxies():
 	return good_pairs
 
 def produce():
-	# Make temp directory for image downloads
-	tempdir = os.path.join(os.getcwd(), 'temp')
-	if not os.path.exists(tempdir):
-		os.mkdir(tempdir)
 	# Compile epoch time regex pattern
 	epoch_ptrn = re.compile(r'[0-9]{10,}')
 	# Initialize db object
@@ -94,11 +89,11 @@ def produce():
 		for doc in docs:
 			# If the image exists (aka it's epoch time < current epoch time), push it to the queue
 			if doc['epoch'] < int(datetime.datetime.now().timestamp()):
-				app.send_task('scrape-infrared', (proxies, tempdir, doc['_id'], doc['axis'], doc['url'], doc['epoch'],))
+				app.send_task('scrape-infrared', (proxies, doc['_id'], doc['axis'], doc['url'], doc['epoch'],), queue='infrared')
 			# Otherwise, wait 15 seconds and push it to the queue
 			else:
 				time.sleep(WAIT_SECS)
-				app.send_task('scrape-infrared', (proxies, tempdir, doc['_id'], doc['axis'], doc['url'], doc['epoch'],))
+				app.send_task('scrape-infrared', (proxies, doc['_id'], doc['axis'], doc['url'], doc['epoch'],), queue='infrared')
 			# Update doc's epoch time by 15 seconds
 			doc['epoch'] = doc['epoch']+15
 			doc['url'] = epoch_ptrn.sub(str(doc['epoch']), doc['url'])

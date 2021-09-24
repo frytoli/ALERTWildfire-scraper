@@ -54,6 +54,22 @@ class gdrive():
                 )
                 creds = flow.run_local_server(port=0)
 
+    def mkdir(self, name):
+        # Refresh tokens if necessary
+        self._refresh_token()
+        # Initialize service
+        service = build('drive', 'v3', credentials=self.creds)
+        # Create file metadata
+        metadata = {
+            'parents': [self.PARENT_DIR],
+            'name': name,
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        # Execute the creation
+        folder = service.files().create(body=metadata, fields='id').execute()
+        # Return the new folder's ID
+        return folder.get('id')
+
     def upload(self, path_to_file, mimetype='text/plain'):
         # Refresh tokens if necessary
         self._refresh_token()

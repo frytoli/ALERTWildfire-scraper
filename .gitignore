@@ -135,3 +135,5 @@ docker-compose.yml
 temp/
 data/
 **.DS_Store
+credentials.json
+token.json
