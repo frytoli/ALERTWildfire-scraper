@@ -27,26 +27,6 @@ class arangodb():
                 print(f'[!] Failed to establish a connection: {e}\n  [-] Trying again in 5 seconds')
                 time.sleep(5)
 
-    def get_docs(self, collection, tweetid=0):
-        '''
-            Fetch documents from database with optional time range filtering
-        '''
-        bindVars = {'@collection': collection}
-        if tweetid:
-            starttime = (datetime.datetime.utcnow() - datetime.timedelta(seconds=secsdelta)).isoformat
-            aql = '''
-                FOR doc IN @@collection
-                    FILTER doc.tweetid > @tweetid
-                    RETURN doc
-            '''
-            bindVars['tweetid'] = tweetid
-        else:
-            aql = '''
-                FOR doc IN @@collection
-                    RETURN doc
-            '''
-        return list(self.db.AQLQuery(aql, bindVars=bindVars, rawResults=True))
-
     def update_epoch(self, id, url, epoch):
         '''
             Update infrared camera documents

@@ -46,16 +46,3 @@ class arangodb():
                     RETURN doc
             '''
         return list(self.db.AQLQuery(aql, bindVars=bindVars, rawResults=True))
-
-    def insert_doc(self, collection, doc):
-        '''
-            Insert a document into a collection
-        '''
-        bindVars = {
-            '@collection': collection,
-            'doc': doc
-        }
-        aql = '''
-            INSERT @doc INTO @@collection
-        '''
-        return self.db.AQLQuery(aql, bindVars=bindVars)

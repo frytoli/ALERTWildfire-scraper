@@ -46,20 +46,3 @@ class arangodb():
                     RETURN doc
             '''
         return list(self.db.AQLQuery(aql, bindVars=bindVars, rawResults=True))
-
-    def update_epoch(self, id, url, epoch):
-        '''
-            Update infrared camera documents
-        '''
-        bindVars = {
-            'id': id,
-            'url': url,
-            'epoch':int(epoch),
-            'timestamp': datetime.datetime.utcnow().isoformat()
-        }
-        aql = '''
-            FOR doc IN `ir-cameras`
-                FILTER doc._id == @id
-                UPDATE doc._key WITH { url: @url, epoch: @epoch, timestamp: @timestamp } IN `ir-cameras`
-        '''
-        return self.db.AQLQuery(aql, bindVars=bindVars)
