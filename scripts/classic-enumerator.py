@@ -2,7 +2,7 @@
 
 '''
 One-time enumerator to scrape and save camera URLs to database
-Last updated: 2021-09-07
+Last updated: 2021-10-07
 '''
 
 from requests_html import HTMLSession
@@ -25,14 +25,16 @@ class arangodb():
             password=DB_PASS
         )[DB_NAME]
 
-    def insert_camera(self, axis, url):
+    def insert_camera(self, axis, region, url, title):
         aql = '''
             INSERT @doc INTO cameras
         '''
         bindVars = {
             'doc': {
                 'axis':axis,
+                'region': region,
                 'url':url,
+                'title': title,
                 'timestamp':datetime.datetime.utcnow().isoformat()
             }
         }
@@ -66,20 +68,25 @@ def enumerate():
         print(f'[-] Retrieving cameras in {region}')
         region_url = f'{root_url}{region}/index.html'
         # Request page and render JS
-        r = session.get(region_url, headers={'User-Agent':ua})
+        r = session.get(region_url)
         r.html.render()
-        # Find camera axis
-        block = r.html.find('#thumbnail-block', first=True)
-        thumbnails = block.find('div')
+        # Find camera thumbnails
+        thumbnails = r.html.find('.thumbNail')
         # Iterate over thumbnails, craft urls, and save to database
-        for elem in thumbnails:
-            if elem.attrs['class']:
-                axis = elem.find('p', first=True).attrs['id'].strip().replace('-label', '')
-                camera_url = f'{region_url}?camera={axis}'
-                # Save to database
-                axis = f'{region}.{axis}'
-                adb.insert_camera(axis, camera_url)
-                print(f'  [+] Camera {axis} saved')
+        for thumb in thumbnails:
+            # Find thumbnail image
+            img = thumb.find('img', first=True)
+            # Extract camera id
+            id = img.attrs['id']
+            # Craft url
+            url = f'{region_url}?camera={id}'
+            # Find thumbnail caption
+            p = thumb.find('p', first=True)
+            # Get camera title
+            title = p.text
+            # Save to database
+            adb.insert_camera(id, region, url, title)
+            print(f'  [+] Camera {id} saved')
         time.sleep(random.randint(4,20))
     session.close()
 
