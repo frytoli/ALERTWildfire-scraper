@@ -16,12 +16,11 @@ A multi-pronged service created for the goal of collecting training data for USC
 5. [RabbitMQ](#rabbitmq)
 6. [Classic Scraper](#classic-scraper)
 7. [Infrared Scraper](#infrared-scraper)
-8. [Tweet Alerts](#tweet-alerts)
 
 ![](media/diagram.png)
 
 ## Prerequisites
-1. Create a Twitter Developer account, start a new project, and set the CLIENT_ID and CLIENT_SECRET environment variables in ```docker-compose.yml``` accordingly. [Step-by-step guide to making your first request to the new Twitter API v2](https://developer.twitter.com/en/docs/tutorials/step-by-step-guide-to-making-your-first-request-to-the-twitter-api-v2)
+1. Create a Twitter Developer account, start a new project, and set the SEARCHTWEETS_ENDPOINT, SEARCHTWEETS_BEARER_TOKEN, SEARCHTWEETS_CONSUMER_KEY, and SEARCHTWEETS_CONSUMER_SECRET environment variables in ```docker-compose.yml``` accordingly. [Step-by-step guide to making your first request to the new Twitter API v2](https://developer.twitter.com/en/docs/tutorials/step-by-step-guide-to-making-your-first-request-to-the-twitter-api-v2)
 2. Create a Google Developer account, create a new project with the Google Drive API (ensure that the scopes include read access to file metadata and write/file upload access to drive), authenticate a user outside of Docker (I used Google's [quickstart](https://developers.google.com/drive/api/v3/quickstart/python#step_2_configure_the_sample) and a modified version of this exists at ```scripts/gdrive-token-helper.py```), and set PROJECT_ID, TOKEN, REFRESH_TOKEN, and GDRIVE_PARENT_DIR environment variables accordingly.
 
 ## Run It
@@ -93,13 +92,14 @@ consumer_timeout = 3600000
 ## Classic Scraper
 
 ### Producer
-Classic cameras image scraping queue producer.
+Classic cameras image scraping queue producer. This process is invoked when a new Tweet to AlertWildfire's Twitter account is recognized. Tweets are queried every minute. If a camera is mentioned by name or axis in a Tweet's text, the camera is prioritized when scraping.
 
 Technologies:
 * Docker
 * ArangoDB (latest)
 * Python 3.9
   * [Celery](https://github.com/celery/celery) (5.1.2)
+  * [searchtweets-v2](https://github.com/twitterdev/search-tweets-python)
 * Redis (latest)
 * RabbitMQ (latest)
 
@@ -127,6 +127,14 @@ Technologies:
 <b>DB_USER</b>: (arangodb) database user
 
 <b>DB_PASS</b>: (arangodb) database password
+
+<b>SEARCHTWEETS_ENDPOINT</b>: Twitter Developer API endpoint
+
+<b>SEARCHTWEETS_BEARER_TOKEN</b>: Twitter Developer API bearer token
+
+<b>SEARCHTWEETS_CONSUMER_KEY</b>: Twitter Developer API key
+
+<b>SEARCHTWEETS_CONSUMER_SECRET</b>: Twitter Developer API secret
 
 <b>CHUNK_SIZE</b>: integer number of camera urls to be retrieved by asynchronous HTTP requests per celery task
 
@@ -296,31 +304,3 @@ Technologies:
 #### Logs
 
 Logs are sent to stdout and stderr. This can be changed in ```infrared-scraper/conf/supervise-celery.conf```.
-
-## Tweet Alerts
-Monitoring service that looks for and saves Tweets at @AlertWildfire to a local database that, one can assume, indicate wildfire activity on one of the cameras
-
-Technologies:
-* Docker
-* ArangoDB (latest)
-* Python 3.9
-  * [searchtweets-v2](https://github.com/twitterdev/search-tweets-python)
-* Twitter Developer API
-
-### Environment Variables
-
-<b>DB_HOST</b>: database host
-
-<b>DB_PORT</b>: (arangodb) database port
-
-<b>DB_NAME</b>: (arangodb) database name
-
-<b>DB_USER</b>: (arangodb) database user
-
-<b>DB_PASS</b>: (arangodb) database password
-
-<b>CLIENT_ID</b>: Twitter API client ID
-
-<b>CLIENT_SECRET</b>: Twitter API client secret
-
-<b>PROJECT_ID</b>: Twitter API project ID
