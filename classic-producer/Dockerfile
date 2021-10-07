@@ -31,9 +31,7 @@ RUN python -m pip install --upgrade pip
 RUN pip install --no-dependencies \
 	amqp==5.0.6 \
 	appdirs==1.4.4 \
-	beautifulsoup4==4.9.3 \
 	billiard==3.6.4.0 \
-	bs4==0.0.1 \
 	cachetools==4.2.2 \
 	celery==5.1.2 \
 	certifi==2021.5.30 \
@@ -46,12 +44,6 @@ RUN pip install --no-dependencies \
 	DateTime==4.3 \
 	fake-useragent==0.1.11 \
 	future==0.18.2 \
-	google-api-core==2.0.0 \
-	google-api-python-client==2.17.0 \
-	google-auth==2.0.1 \
-	google-auth-httplib2==0.1.0 \
-	google-auth-oauthlib==0.4.5 \
-	googleapis-common-protos==1.53.0 \
 	httplib2==0.19.1 \
 	idna==3.2 \
 	importlib-metadata==4.6.4 \
@@ -66,15 +58,11 @@ RUN pip install --no-dependencies \
 	pyasn1-modules==0.2.8 \
 	pyee==8.2.2 \
 	pyparsing==2.4.7 \
-	pyppeteer==0.2.6 \
 	pyquery==1.4.3 \
 	pytz==2021.1 \
-	requests==2.26.0 \
-	requests-html==0.10.0 \
-	requests-oauthlib==1.3.0 \
 	rsa==4.7.2 \
+	searchtweets-v2==1.1.1 \
 	six==1.15.0 \
-	soupsieve==2.2.1 \
 	tqdm==4.62.1 \
 	uritemplate==3.0.1 \
 	urllib3==1.25.11 \

@@ -44,6 +44,10 @@ services:
       - DB_USER=changeme
       - DB_PASS=changeme
       - CHUNK_SIZE=15
+      - SEARCHTWEETS_ENDPOINT=changeme
+      - SEARCHTWEETS_BEARER_TOKEN=changeme
+      - SEARCHTWEETS_CONSUMER_KEY=changeme
+      - SEARCHTWEETS_CONSUMER_SECRET=changeme
       - QUEUE=changeme
     depends_on:
       - rabbitmq
@@ -127,20 +131,3 @@ services:
       - rabbitmq
       - redis
     scale: 2
-
-  tweetalerts:
-    hostname: tweetalerts
-    build: ./tweetalerts
-    container_name: tweetalerts
-    environment:
-      - DB_HOST=host.docker.internal
-      - DB_PORT=8529
-      - DB_NAME=alertwildfire
-      - DB_USER=changeme
-      - DB_PASS=changeme
-      - SEARCHTWEETS_ENDPOINT=changeme
-      - SEARCHTWEETS_BEARER_TOKEN=changeme
-      - SEARCHTWEETS_CONSUMER_KEY=changeme
-      - SEARCHTWEETS_CONSUMER_SECRET=changeme
-    depends_on:
-      - arangodb

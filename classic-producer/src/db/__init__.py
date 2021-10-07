@@ -46,3 +46,20 @@ class arangodb():
                     RETURN doc
             '''
         return list(self.db.AQLQuery(aql, bindVars=bindVars, rawResults=True))
+
+    def insert_new_tweet(self, tweetid, text):
+        '''
+            Insert a new tweet document into the collection and ignore previously-seen tweets
+        '''
+        bindVars = {
+            'tweetid': tweetid,
+            'text': text,
+            'timestamp': datetime.datetime.utcnow().isoformat()
+        }
+        aql = '''
+            UPSERT { id: @tweetid }
+            INSERT { id: @tweetid, text: @text, scrape_timestamp: @timestamp }
+            UPDATE { } IN tweets
+            RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }
+        '''
+        return self.db.AQLQuery(aql, bindVars=bindVars, rawResults=True)
