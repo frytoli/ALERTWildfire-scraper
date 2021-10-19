@@ -59,11 +59,15 @@ RUN pip install --no-dependencies \
 	pyee==8.2.2 \
 	pyparsing==2.4.7 \
 	pyquery==1.4.3 \
+	python-dateutil==2.8.2 \
 	pytz==2021.1 \
+	pyyaml==5.4.1 \
+	requests==2.26.0 \
 	rsa==4.7.2 \
 	searchtweets-v2==1.1.1 \
 	six==1.15.0 \
 	tqdm==4.62.1 \
+	tweet-parser==1.13.2 \
 	uritemplate==3.0.1 \
 	urllib3==1.25.11 \
 	vine==5.0.0 \

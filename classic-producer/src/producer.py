@@ -54,27 +54,27 @@ def produce(new_tweets):
 
 def schedule():
 	# Initialize db object
-    adb = db.arangodb()
-    # Query tweets every minute
-    while True:
-        # Load credentials from environment vars
-        search_args = load_credentials(None)
-        # Craft query
-        query = gen_request_parameters('@alertwildfire', granularity=None, results_per_call=10)
-        # Collect tweet results
-        tweets = collect_results(query, max_tweets=10, result_stream_args=search_args)[0]['data']
+	adb = db.arangodb()
+	# Query tweets every minute
+	while True:
+		# Load credentials from environment vars
+		search_args = load_credentials(None)
+		# Craft query
+		query = gen_request_parameters('@alertwildfire', granularity=None, results_per_call=10)
+		# Collect tweet results
+		tweets = collect_results(query, max_tweets=10, result_stream_args=search_args)[0]['data']
 		# Toggle for new tweet
 		new_tweets = []
-        # Write to database
-        for tweet in tweets:
-            upsert_resp = adb.insert_new_tweet(tweet['id'], tweet['text'])[0]
+		# Write to database
+		for tweet in tweets:
+			upsert_resp = adb.insert_new_tweet(tweet['id'], tweet['text'])[0]
 			if upsert_resp['type'] == 'insert':
 				new_tweets.append(tweet['text'])
 		# If a new tweet was found, kick off scraping of alertwildfire camera images
 		if len(new_tweets)>0:
 			produce(new_tweets)
-        # Try again in 1 minute
-        time.sleep(3600)
+		# Try again in 1 minute
+		time.sleep(3600)
 
 if __name__ == '__main__':
 	schedule()
