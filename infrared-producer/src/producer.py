@@ -3,6 +3,7 @@
 from requests_html import HTMLSession
 from celery import Celery
 import datetime
+import random
 import time
 import re
 import db
